@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Propaganda Auto Checkouter - Settings</title>
+  <link rel="stylesheet" href="../../assets/styles/settings.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #3a86ff;
+      --primary-hover: #2563eb;
+      --bg-dark: #0a0a0a;
+      --bg-darker: #050505;
+      --text-color: #ffffff;
+      --text-muted: #666666;
+      --border-color: #1a1a1a;
+      --hover-bg: #151515;
+      --error-color: #dc2626;
+      --success-color: #059669;
+      --button-text: #ffffff;
+    }
+
+    /* Performance optimized styles */
+    #custom-notification-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 90vw;
+      width: 380px;
+      pointer-events: none;
+    }
+
+    .custom-notification {
+      display: flex;
+      align-items: flex-start;
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: auto;
+      min-width: 320px;
+      border-left: 4px solid transparent;
+    }
+
+    .custom-notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .custom-notification.hide {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    .custom-notification.success { border-left-color: var(--success-color); }
+    .custom-notification.error { border-left-color: var(--error-color); }
+    .custom-notification.info { border-left-color: var(--primary-color); }
+
+    .notification-icon {
+      margin-right: 14px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .notification-content {
+      flex-grow: 1;
+    }
+
+    .notification-message {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-color);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .team-propaganda {
+      display: block;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .card-details {
+      font-family: monospace;
+      font-size: 13px;
+      color: var(--text-color);
+      background-color: var(--bg-darker);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+      display: inline-block;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      user-select: all;
+    }
+
+    #action-buttons-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background-color: var(--bg-dark);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: var(--bg-darker);
+      border: 1px solid var(--border-color);
+      transition: background-color 0.2s ease;
+    }
+
+    .icon-button:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .icon-button svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-color);
+    }
+
+    /* Preloader - Performance optimized */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--bg-darker);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+
+    .preloader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-icon {
+      font-size: 3rem;
+      color: var(--primary-color);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .typewriter h1 {
+      color: var(--text-color);
+      font-family: monospace;
+      overflow: hidden;
+      border-right: 3px solid var(--primary-color);
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 2px;
+      animation: typing 3s steps(30, end), blink 0.75s step-end infinite;
+    }
+
+    /* Simplified animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes blink {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--primary-color); }
+    }
+
+    /* Media queries */
+    @media (max-width: 480px) {
+      #custom-notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+      }
+
+      .custom-notification {
+        min-width: unset;
+      }
+
+      #action-buttons-container {
+        bottom: 10px;
+        right: 10px;
+      }
+
+      .icon-button {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader" class="preloader">
+    <div class="loader">
+      <i class="fas fa-bolt loader-icon"></i>
+    </div>
+    <div class="typewriter">
+      <h1></h1>
+    </div>
+  </div>
+
+  <div class="notifications-container"></div>
+  <div class="app-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-section">
+          <div class="logo-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h1><br> </h1>
+          <div class="header-divider"></div>
+        </div>
+        <div class="extension-toggle">
+          <label class="switch">
+            <input type="checkbox" id="extension-toggle-input">
+            <span class="switch-slider round"></span>
+          </label>
+          <span class="toggle-label" id="toggle-status-label">Start Hitting When? ❌</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button id="bin-toggle" class="nav-button active">
+          <i class="fas fa-credit-card"></i>
+          BIN
+        </button>
+        <button id="cc-toggle" class="nav-button">
+          <i class="fas fa-list"></i>
+          CC List
+        </button>
+        <button id="telegram-toggle" class="nav-button">
+          <i class="fab fa-telegram"></i>
+          Telegram
+        </button>
+        <button id="email-toggle" class="nav-button">
+          <i class="fas fa-envelope"></i>
+          Email
+        </button>
+        <button id="proxy-toggle" class="nav-button">
+          <i class="fas fa-network-wired"></i>
+          Proxy
+        </button>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="top-bar">
+        <div class="top-bar-title">
+          <i class="fas fa-robot"></i>
+          <span>Propaganda Auto Co</span>
+          <div class="version-tag">v1.2</div>
+        </div>
+        <a href="#" class="join-telegram-btn">
+          <i class="fab fa-telegram"></i>
+          Join Telegram
+        </a>
+      </div>
+
+      <div class="settings-container">
+        <p class="settings-note">Configure your settings below. Note: Saving settings requires Telegram verification.</p>
+
+        <div id="bin-section" class="settings-section active-section">
+          <div class="input-group">
+            <label for="bin-input">Enter BIN:</label>
+            <div class="input-with-tooltip">
+              <input type="text" id="bin-input" placeholder="e.g., 440393 (BIN)">
+            </div>
+          </div>
+          <div class="section-actions">
+            <button id="save-settings" class="main-button">Save Settings</button>
+            <button id="history-button" class="main-button">View History</button>
+          </div>
+        </div>
+
+        <div id="cc-section" class="settings-section">
+          <div class="input-group">
+            <label for="card-list-input">Enter Card List (max 15, one per line):</label>
+            <div class="input-with-tooltip">
+              <textarea id="card-list-input" placeholder="e.g., 4117704096191910|10|2028|216"></textarea>
+            </div>
+          </div>
+          <div class="section-actions">
+            <button id="save-settings-cc" class="main-button">Save Settings</button>
+            <button id="history-button-cc" class="main-button">View History</button>
+          </div>
+        </div>
+
+        <div id="telegram-section" class="settings-section">
+          <div class="input-group">
+            <label for="telegram-id-input">Enter Your Telegram ID:</label>
+            <div class="input-with-tooltip">
+              <input type="text" id="telegram-id-input" placeholder="e.g., 123456789">
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="otp-input">Enter OTP:</label>
+            <div class="input-with-tooltip">
+              <input type="text" id="otp-input" placeholder="Enter OTP">
+            </div>
+          </div>
+          <div class="buttons-group">
+            <button id="send-otp" class="secondary-button">Send OTP</button>
+            <button id="verify-otp" class="secondary-button">Verify OTP</button>
+          </div>
+          <div class="section-actions">
+            <button id="save-settings-telegram" class="main-button">Save Settings</button>
+          </div>
+        </div>
+
+        <div id="email-section" class="settings-section">
+          <div class="input-group">
+            <label for="email-input">Enter Your Email:</label>
+            <div class="input-with-tooltip">
+              <input type="email" id="email-input" placeholder="e.g., example@gmail.com">
+            </div>
+          </div>
+          <div class="section-actions">
+            <button id="save-settings-email" class="main-button">Save Settings</button>
+          </div>
+        </div>
+
+        <div id="proxy-section" class="settings-section">
+          <div class="input-group">
+            <label for="proxy-input">Enter Proxy Details:</label>
+            <div class="input-with-tooltip">
+              <input type="text" id="proxy-input" placeholder="e.g., 123.456.789.012:8080 or user:pass@123.456.789.012:8080">
+            </div>
+          </div>
+          <div class="section-actions">
+            <button id="save-settings-proxy" class="main-button">Save Settings</button>
+          </div>
+        </div>
+
+        <p id="status-message"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="history-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-history-button close-button"><i class="fas fa-times"></i></span>
+      <h2>Payment History</h2>
+      <div id="history-list">
+        <!-- Payment history items will be inserted here -->
+      </div>
+      <div class="history-actions">
+        <button id="clear-all-history" class="history-button">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <script src="scripts/settings/settings.js"></script>
+</body>
+</html>

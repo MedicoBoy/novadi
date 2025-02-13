@@ -1,0 +1,8 @@
+:root { 
+    --checkout-white: #9CA8A8 !important; 
+} 
+ 
+ 
+.StripeElement { 
+    background-color: #35353b !important; 
+}

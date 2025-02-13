@@ -1,0 +1,102 @@
+{
+  "manifest_version": 3,
+  "name": "Propaganda Auto Checkouter (Free Version)",
+  "version": "1.2",
+  "description": "Automates Stripe checkout retries, logs card decline reasons, identifies successful transactions.",
+  "permissions": [
+    "proxy",
+    "webRequest",
+    "webRequestAuthProvider",
+    "storage",
+    "activeTab",
+    "tabs",
+    "downloads",
+    "scripting",
+    "declarativeNetRequest",
+    "alarms"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "*://*.stripe.com/*",
+    "http://*/*",
+    "https://*/*",
+    "*://62.169.27.88/*",
+    "*://172.84.76.210/*",
+    "*://*/cs_live_*",
+    "*://buy.stripe.com/*",
+    "https://api.telegram.org/*"
+  ],
+  "background": {
+    "service_worker": "scripts/background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*cs_live_*",
+        "https://buy.stripe.com/*",
+        "*://*/*checkout/*",
+        "*://*/*checkout/session/*"
+      ],
+      "all_frames": true,
+      "js": ["scripts/data/datainjector.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://*/*cs_live_*",
+        "https://buy.stripe.com/*",
+        "*://*/*checkout/*",
+        "*://*/*checkout/session/*"
+      ],
+      "all_frames": true,
+      "js": ["scripts/data/injectpayment.js", "scripts/responses/responseinterceptor.js"],
+      "css": ["assets/styles/customStripeStyles.css"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*/*cs_live_*",
+        "https://buy.stripe.com/*",
+        "*://*/*checkout/*",
+        "*://*/*checkout/session/*"
+      ],
+      "all_frames": true,
+      "js": ["scripts/payment/paymentcontent.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*/*cs_live_*",
+        "https://buy.stripe.com/*",
+        "*://*/*checkout/*",
+        "*://*/*checkout/session/*"
+      ],
+      "type": "module",
+      "js": [
+        "scripts/autofill/autofill.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_title": "Propaganda Auto Checkouter"
+  },
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": true
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/images/striped.png",
+        "assets/sounds/hit_sound.mp3",
+        "assets/sounds/autohitter.mp3",
+        "data/countries/*.json",
+        "data/common/*.json"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
